@@ -1,6 +1,9 @@
-import re
+# part of issue https://github.com/mini-kep/db/blob/master/doc/listing.md
 
-names = [
+import itertools
+import fnmatch
+
+NAMES = [
     "BRENT",
     "CPI_ALCOHOL_rog",
     "CPI_FOOD_rog",
@@ -52,50 +55,41 @@ names = [
     "WAGE_REAL_yoy"
 ]
 
-# part of issue https://github.com/mini-kep/db/blob/master/doc/listing.md
-# https://github.com/mini-kep/db/blob/master/doc/listing.md
 
-# setting
-
-concepts = dict(labor=['WAGE_*', 'UNEMPL'],
-                output=['IND*', 'TRANSPORT_FREIGHT'])
+def extract_varname(label):
+    words = label.split('_')
+    return '_'.join(itertools.takewhile(lambda word: word.isupper(), words))
 
 
-# TODO 1: make a selection function that produces a list of
-#       variable names based on regex or variable head
-
-#       use <https://github.com/mini-kep/parser-rosstat-kep/blob/master/src/csv2df/util_label.py>
-#       to split labels
-
-# TODO 2: write tests for the fucntion using the guidelines
-#         <https://github.com/mini-kep/guidelines/blob/master/testing.md>
+def is_matched(name, pat):
+    varhead = extract_varname(name)
+    return fnmatch.fnmatch(varhead, pat)
 
 
-def make_namelist(patterns):
-    namelist = []
-    search = ""
-
-    re_1 = re.compile(get_re())
-    for p in patterns:
-        match = re_1.match(p)
-        search += match.group() + '|'
-    search = search[:-1]
-
-    re_2 = re.compile(str(search))
-    for name in names:
-        hit = re_2.search(name)
-        if hit is not None:
-            namelist.append(name)
-    return namelist
+def make_namelist(patterns, names):
+    return sorted([name for pat in patterns for name in names
+                   if is_matched(name, pat)])
 
 
-def get_re():
-    return '([A-Z]+_?)+'
+def find_missing_concepts(_concepts, names):
+    concept_names = make_namelist([p for patterns in _concepts.values() for p in patterns], names)
+    return set(NAMES) - set(concept_names)
 
 
-labor = make_namelist(concepts['labor'])
-assert set(labor) == set(["WAGE_NOMINAL_rub",
-                          "WAGE_REAL_rog",
-                          "WAGE_REAL_yoy",
-                          "UNEMPL_pct"
-                          ])
+if __name__ == '__main__':
+    # https://github.com/mini-kep/db/blob/master/doc/listing.md
+    from collections import OrderedDict
+
+    concepts = OrderedDict()
+    concepts.update({'GDP': ['GDP*']})
+    concepts.update({'Output': ['IND*', 'TRANSPORT_FREIGHT']})
+    concepts.update({'Prices': ['CPI*']})
+    concepts.update({'Retail trade': ['RETAIL*']})
+    concepts.update({'Government - revenue': ['GOV_REVENUE*']})
+    concepts.update({'Government - spending': ['GOV_EXPENSE*']})
+    concepts.update({'Government - surplus': ['GOV_SURPLUS*']})
+    concepts.update({'Labour': ['WAGE_*', 'UNEMPL']})
+    concepts.update({'Exchange rate': ['USDRUR*']})
+    concepts.update({'Global': ['UST*', 'BRENT']})
+    print(concepts)
+    print(find_missing_concepts(concepts, NAMES))
