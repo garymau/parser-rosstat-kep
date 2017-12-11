@@ -71,8 +71,9 @@ def make_namelist(patterns, names):
                    if is_matched(name, pat)])
 
 
-def find_missing_concepts(_concepts, names):
-    concept_names = make_namelist([p for patterns in _concepts.values() for p in patterns], names)
+def find_missing_concepts(concepts, names):
+    concept_names = make_namelist([p for patterns in concepts.values() \
+                                   for p in patterns], names)
     return set(NAMES) - set(concept_names)
 
 
