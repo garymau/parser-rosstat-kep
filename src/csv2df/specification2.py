@@ -303,7 +303,7 @@ descriptions = dict(GDP="Валовый внутренний продукт (В�
      
 PARSING_DEFINITION = {}
 PARSING_DEFINITION['segments'] = []
-PARSING_DEFINITION['default'] = Def(commands=[                     
+PARSING_DEFINITION['default'] = Def(commands=[
     ParsingCommand("GDP",
                    headers=["Oбъем ВВП",
                            "Индекс физического объема произведенного ВВП, в %",
@@ -312,7 +312,7 @@ PARSING_DEFINITION['default'] = Def(commands=[
 ,   ParsingCommand("INDPRO",
                    headers="Индекс промышленного производства",
                    required_units=["yoy", "rog"])
-])            
+])
 
 
 # TODO 2: convert this to test
@@ -320,20 +320,13 @@ PARSING_DEFINITION['default'] = Def(commands=[
 #        - mapper (dict)
 #        - required (list)
 #        - units (dict)
-#        FIXME: is it a fucntion name or fucn itself?
+#        FIXME: is it a function name or func itself?
 #        - reader (str)
 #        
 #    Public method:
 #        - get_bounds()
 
 pd = PARSING_DEFINITION['default']
-
-assert pd.mapper
-assert pd.required
-assert pd.units   
-# not defiend, but present
-assert pd.reader is None
-assert pd.get_bounds
 
 
 sc = Scope("1.9. Внешнеторговый оборот – всего",

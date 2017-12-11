@@ -7,6 +7,9 @@ import csv2df.specification as spec
 from csv2df.specification import as_list, ParsingInstruction
 from csv2df.specification import Definition, Scope
 
+from csv2df.specification2 import ParsingCommand
+from csv2df.specification2 import PARSING_DEFINITION
+
 from csv2df.specification import Specification
 
 
@@ -166,6 +169,47 @@ class Test_Specification:
     def test_get_varnames(self):
         from csv2df.specification import SPEC
         assert SPEC.get_varnames()
+
+
+class Test_ParsingCommmand:
+    pc = ParsingCommand(
+        "GDP",
+        headers=["Oбъем ВВП",
+                 "Индекс физического объема произведенного ВВП, в %",
+                 "Валовой внутренний продукт"],
+        required_units=["bln_rub", "yoy"])
+
+    def test_mapper_property_is_dict_of_varheads(self):
+        assert self.pc.mapper == \
+               {'Oбъем ВВП': 'GDP',
+                'Валовой внутренний продукт': 'GDP',
+                'Индекс физического объема произведенного ВВП, в %': 'GDP'}
+
+    def test_required_property_is_list_of_required_units(self):
+        assert self.pc.required == ['GDP_bln_rub', 'GDP_yoy']
+
+    def test_units_property_is_list_of_required_units(self):
+        assert self.pc.units == ['bln_rub', 'yoy']
+
+
+class Test_Parsing_Definition:
+    pd = PARSING_DEFINITION['default']
+
+    def test_default_pdef_mapper_property(self):
+        assert self.pd.mapper
+
+    def test_default_pdef_required_property(self):
+        assert self.pd.required
+
+    def test_default_pdef_units_property(self):
+        assert self.pd.units
+
+    def test_default_pdef_reader_property(self):
+        # not defined, but present
+        assert self.pd.reader is None
+
+    def test_default_pdef_get_bounds(self):
+        assert self.pd.get_bounds
 
 
 if __name__ == "__main__":
