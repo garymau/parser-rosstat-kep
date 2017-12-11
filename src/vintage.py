@@ -21,7 +21,7 @@ from csv2df.specification import SPEC
 from csv2df.reader import Reader, open_csv
 from csv2df.parser import extract_tables
 from csv2df.emitter import Emitter
-from csv2df.validator import Validator
+from validator import Validator
 
 
 __all__ = ['get_dataframes', 'Vintage', 'Collection']
@@ -67,6 +67,7 @@ class Vintage:
         return True
 
     def validate(self):
+        # FUXME: maybe a function
         checker = Validator(*[self.dfs[freq] for freq in FREQUENCIES])
         checker.run()
         print("Test values parsed OK for", self)
@@ -113,10 +114,10 @@ if __name__ == "__main__":
     # Collection.approve_latest()
     # Collection.approve_all()
     # Collection.save_latest()
-    # Collection.save_all()
+    Collection.save_all()
 
     # sample Vintage call
-    year, month = 2015, 5
-    vint = Vintage(year, month)
-    vint.validate()
+    #year, month = 2015, 5
+    #vint = Vintage(year, month)
+    #vint.validate()
     #dfa, dfq, dfm = vint.dfs()
